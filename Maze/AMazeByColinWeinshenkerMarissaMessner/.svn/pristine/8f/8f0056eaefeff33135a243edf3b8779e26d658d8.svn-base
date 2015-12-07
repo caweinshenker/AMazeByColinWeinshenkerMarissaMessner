@@ -1,0 +1,454 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.BasicRobot;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.Constants;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.CuriousMouse;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.GraphicsWrapper;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.ManualDriver;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.Maze;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.Robot;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.RobotDriver;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.WallFollower;
+import edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad.Wizard;
+
+/**
+ * This class supports functionality for the play state of the maze
+ * The class should handle user input on two different toolbars
+ * The first toolbar allows the user to toggle the mazeview options
+ * The second toolbar (footer) allows the user to drive the robot in manual mode
+ * If not in manual mode, the second toolbar simply has a pause button to stop a robot
+ * There should also be two buttons to move to the finish activity in success and failure states, respectively
+ * @author cweinshenker 
+ * @author mamessner
+ */
+public class PlayActivity extends AppCompatActivity{
+	
+	private RelativeLayout layout;
+	private GraphicsWrapper tupac;
+	//private Toolbar mainToolbar;
+	private Toolbar arrowBar;
+	private ProgressBar batteryBar;
+	private String driverName;
+	private boolean showSolution;
+	private boolean showWalls;
+	private boolean showMaze;
+	private ToggleButton wallsToggle;
+	private ToggleButton solutionToggle;
+	private ToggleButton mazeToggle;
+	private float batteryLevel;
+	private int pathLength;
+	private boolean foundExit;
+	private Maze maze;
+	private Robot robby;
+	private RobotDriver driver;
+	private Handler robotHandler = new Handler();
+	private Handler stateHandler = new Handler(){
+		@Override
+		public void handleMessage (Message msg){
+			int state = msg.what;
+			switch(state){
+			case Constants.STATE_FAILURE:
+				toFinishFailure(new View(getApplicationContext()));
+				break;
+			case Constants.STATE_FINISH:
+				toFinishSuccess(new View(getApplicationContext()));
+				break;
+			}
+		}
+	};
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_play);
+		batteryBar = (ProgressBar) findViewById(R.id.batteryLevelBar);
+		batteryBar.setProgress(batteryBar.getMax());
+		getIntentExtras();
+		maze = GeneratingActivity.maze;
+		maze.setRobotHandler(robotHandler);
+		//setUpToolbars();
+		setUpRobotAndDriver();
+		//setToolbarListener();
+		setUpGraphicsWrapper();
+		setToggles();
+	}
+
+	public void setToggles(){
+		wallsToggle = (ToggleButton) findViewById(R.id.toggleButton1);
+		wallsToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	Log.v("Top-down button", "clicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("m"));
+		            // The toggle is enabled
+		        } else {
+		        	Log.v("Top-down button", "Unclicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("m"));
+		            // The toggle is disabled
+		        }
+		    }
+		});
+		solutionToggle = (ToggleButton) findViewById(R.id.toggleButton2);
+		solutionToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	Log.v("Show solution button", "clicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled solution", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("s"));
+		            // The toggle is enabled
+		        } else {
+		        	Log.v("Show solution button", "unclicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled solution", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("s"));
+		            // The toggle is disabled
+		        }
+		    }
+		});
+		mazeToggle = (ToggleButton) findViewById(R.id.toggleButton3);
+		mazeToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	Log.v("Top-down button", "clicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("m"));
+		            // The toggle is enabled
+		        } else {
+		        	Log.v("Top-down button", "unclicked");
+		    		Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+		    		maze.keyDown(Integer.parseInt("m"));
+		            // The toggle is disabled
+		        }
+		    }
+		});
+	}
+	
+	/**
+	 * Inflate the menu; this adds items to the action bar if it is present.
+	 * @param menu -- the menu of options
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.play, menu);
+		return true;
+	}
+
+//	/**
+//	 * Handle action bar item clicks here.
+//	 * This action bar lets the user toggle the maze outline, walls, and shown solution
+//	 * @param item -- the selected item
+//	 */
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//
+//		int id = item.getItemId();
+//		switch(id){
+//		case R.id.action_settings:
+//			Log.v("Settings button", "clicked");
+//			Toast.makeText(getApplicationContext(), "Selected settings", Toast.LENGTH_SHORT).show();
+//			return true;
+//		case R.id.showmaze:
+//			Log.v("Top-down button", "clicked");
+//			Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+//			maze.keyDown(Integer.parseInt("m"));
+//			return true;
+//		case R.id.solution:
+//			Log.v("Show solution button", "clicked");
+//			Toast.makeText(getApplicationContext(), "Toggled solution", Toast.LENGTH_SHORT).show();
+//			maze.keyDown(Integer.parseInt("s"));
+//			return true;
+//		case R.id.walls:
+//			Log.v("Show walls button", "clicked");
+//			Toast.makeText(getApplicationContext(), "Toggled walls", Toast.LENGTH_SHORT).show();
+//			maze.keyDown(Integer.parseInt("z"));
+//			return true;
+//		default:
+//			return super.onOptionsItemSelected(item);
+//		}
+//	}
+	
+	/**
+	 * Move to the finish screen with a success condition
+	 * Pass on the battery level, path length, and finish condition in the intent
+	 * @param view
+	 */
+	public void toFinishSuccess(View view){
+		Log.v("Finished maze", "Moving to finish screen");
+		Toast.makeText(getApplicationContext(), "Finished maze", Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(this, FinishActivity.class);
+		batteryLevel = driver.getEnergyConsumption();
+		Log.v("ECBP", "" + batteryLevel);
+		pathLength = driver.getPathLength();
+		intent.putExtra("Energy Consumption", batteryLevel);
+		intent.putExtra("Path Length", pathLength);
+		intent.putExtra("foundExit", true);
+		startActivity(intent);
+	}
+
+	/**
+	 * Move to the finish screen with a failure condition
+	 * Pass on the battery level, path length, and finish condition in the intent
+	 * @param view
+	 */
+	public void toFinishFailure(View view){
+		Log.v("Failed maze", "Moving to finish screen");
+		Toast.makeText(getApplicationContext(), "Failed maze", Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(this, FinishActivity.class);
+		batteryLevel = driver.getEnergyConsumption();
+		Log.v("ECBP", "" + batteryLevel);
+		pathLength = driver.getPathLength();
+		intent.putExtra("Energy Consumption", batteryLevel);
+		Log.v("Energy consumption before finish activity", "" + batteryLevel);
+		intent.putExtra("Path Length", pathLength);
+		intent.putExtra("foundExit", false);
+		startActivity(intent);
+	}
+
+	public void showMaze(View view){
+		Log.v("Top-down button", "clicked");
+		Toast.makeText(getApplicationContext(), "Toggled top-down view", Toast.LENGTH_SHORT).show();
+		maze.keyDown(Integer.parseInt("m"));
+	}
+	
+	public void showSolution(View view){
+		Log.v("Show solution button", "clicked");
+		Toast.makeText(getApplicationContext(), "Toggled solution", Toast.LENGTH_SHORT).show();
+		maze.keyDown(Integer.parseInt("s"));
+	}
+	
+	public void showWalls(View view){
+		Log.v("Show walls button", "clicked");
+		Toast.makeText(getApplicationContext(), "Toggled walls", Toast.LENGTH_SHORT).show();
+		maze.keyDown(Integer.parseInt("z"));
+	}
+	
+	public void moveForward(View view){
+		final ManualDriver tempDriver = (ManualDriver) driver;
+		Log.v("Move: ", "Forward");
+		Toast.makeText(getApplicationContext(), "Moving backward", Toast.LENGTH_SHORT).show();
+		try {
+			tempDriver.moveForward();
+			Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//toFinishFailure(new View(getApplicationContext()));
+		}
+	}
+	
+	public void moveBack(View view){
+		final ManualDriver tempDriver = (ManualDriver) driver;
+		Log.v("Move: ", "back");
+		Toast.makeText(getApplicationContext(), "Moving backward", Toast.LENGTH_SHORT).show();
+		try {
+			tempDriver.turnAround();
+			Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//toFinishFailure(new View(getApplicationContext()));
+		}
+	}
+	
+	public void moveRight(View view){
+		final ManualDriver tempDriver = (ManualDriver) driver;
+		Log.v("Turn: ", "right");
+		Toast.makeText(getApplicationContext(), "Turning right", Toast.LENGTH_SHORT).show();
+		try {
+			tempDriver.rotateRight();
+			Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//toFinishFailure(new View(getApplicationContext()));
+		}
+		
+	}
+	
+	public void moveLeft(View view){
+		final ManualDriver tempDriver = (ManualDriver) driver;
+		Log.v("Turn: ", "left");
+		Toast.makeText(getApplicationContext(), "Turning left", Toast.LENGTH_SHORT).show();
+		try {
+			tempDriver.rotateLeft();
+			Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//toFinishFailure(new View(getApplicationContext()));
+		}	
+	}
+	
+	/**
+	 * Return to the title screen if the back button is pressed
+	 */
+	@Override
+	public void onBackPressed(){
+		Log.v("Back pressed", "Returning to title screen");
+		Intent intent = new Intent(this, AMazeActivity.class);
+		startActivity(intent);
+	}
+
+//	/**
+//	 * Assign the main toolbar its action listener
+//	 * Respond to the arrow key presses and the pause button 
+//	 */
+//	private void setUpToolbars() {
+//		mainToolbar = (Toolbar) findViewById(R.id.toolbar1);
+//		mainToolbar.setTitle("");
+//		setSupportActionBar(mainToolbar);
+//		getSupportActionBar().setDisplayShowTitleEnabled(false);
+//		arrowBar = (Toolbar) findViewById(R.id.toolbar2);
+//	}
+	
+//	/**
+//	 * Make the lower toolbar responsive to user input
+//	 */
+//	private void setToolbarListener(){
+//		final ManualDriver tempDriver = (ManualDriver) driver;
+//		arrowBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//			@Override
+//			public boolean onMenuItemClick(MenuItem item) {
+//				switch(item.getItemId()){
+//				case R.id.forward:
+//					Log.v("Move: ", "forward");
+//					Toast.makeText(getApplicationContext(), "Moving forward", Toast.LENGTH_SHORT).show();
+//					try {
+//						tempDriver.moveForward();
+//						Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//						//toFinishFailure(new View(getApplicationContext()));
+//					}
+//					return true;
+//				case R.id.backward:
+//					Log.v("Move: ", "back");
+//					Toast.makeText(getApplicationContext(), "Moving backward", Toast.LENGTH_SHORT).show();
+//					try {
+//						tempDriver.turnAround();
+//						Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//						//toFinishFailure(new View(getApplicationContext()));
+//					}
+//					return true;
+//				case R.id.left:
+//					Log.v("Turn: ", "left");
+//					Toast.makeText(getApplicationContext(), "Turning left", Toast.LENGTH_SHORT).show();
+//					try {
+//						tempDriver.rotateLeft();
+//						Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//						//toFinishFailure(new View(getApplicationContext()));
+//					}
+//					return true;
+//				case R.id.right:
+//					Log.v("Turn: ", "right");
+//					Toast.makeText(getApplicationContext(), "Turning right", Toast.LENGTH_SHORT).show();
+//					try {
+//						tempDriver.rotateRight();
+//						Log.v("Energy consumption: ", "" + driver.getEnergyConsumption());
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//						//toFinishFailure(new View(getApplicationContext()));
+//					}
+//					return true;
+//				case R.id.pause:
+//					Log.v("Pause: ", "paused");
+//					Toast.makeText(getApplicationContext(), "Pausing/unpausing", Toast.LENGTH_SHORT).show();
+//					return true;
+//				}
+//				return false;
+//			}
+//		});
+//	}
+	
+	/**
+	 * Get the data from the previous intent.
+	 */
+	private void getIntentExtras() {
+		Intent intent = getIntent();
+		driverName = intent.getStringExtra("driver");
+		showSolution = intent.getBooleanExtra("showSolution", false);
+		showWalls = intent.getBooleanExtra("showWalls", false);
+		showMaze = intent.getBooleanExtra("showMaze", false);
+	}
+	
+	/**
+	 * Set up the GraphicsWrapper.
+	 */
+	private void setUpGraphicsWrapper() {
+		layout = (RelativeLayout) findViewById(R.id.playLayout);
+		layout.post(new Runnable() {
+			@Override
+			public void run() {
+				tupac = (GraphicsWrapper) findViewById(R.id.graphicsWrapper);
+				tupac.measureDimensions();
+				maze.setGraphicsWrapper(tupac);
+				maze.init();
+				maze.getMazeView().setHandler(stateHandler);
+				try {
+					driver.drive2Exit();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//maze.notifyViewerRedraw();
+				//tupac.drawLine(0, 0, 900, 1400);
+			}
+		});
+	}
+	
+	/**
+	 * Set up the robot and driver.
+	 */
+	private void setUpRobotAndDriver() {
+		Log.v("driver: ", driverName);
+		robby = new BasicRobot();
+		robby.setBatteryLevel(2500);
+		robby.setMaze(maze);
+		switch (driverName){
+		case "Manual":
+			driver = new ManualDriver();
+			//arrowBar.inflateMenu(R.menu.arrowkey);
+			break;
+		case "Wall Follower":
+			driver = new WallFollower();
+			//arrowBar.inflateMenu(R.menu.pause);
+			break;
+		case "Wizard":
+			driver = new Wizard();
+			//arrowBar.inflateMenu(R.menu.pause);
+			break;
+		case "Curious Mouse":
+			driver = new CuriousMouse();
+			//arrowBar.inflateMenu(R.menu.pause);
+			break;
+		}
+		driver.setRobot(robby);
+		driver.setDistance(maze.getMazeDists());
+		driver.setDimensions(maze.getMazeWidth(), maze.getMazeHeight());
+	}
+}

@@ -1,0 +1,46 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad;
+
+/**
+ * Static class for relaying data from constructed Maze to MazeGeneration and 
+ * Stateplay activities
+ * 
+ * @author mamessner
+ * @author cweinshenker
+ *
+ */
+public class MazeDataHolder {
+	public static Cells cells;
+	public static Distance distance;
+	
+	/**
+	 * Set the distances matrix
+	 * @param distanceSetter -- the distance matrix to set the class member to
+	 */
+	public static void setDistance(Distance distanceSetter){
+		distance = distanceSetter;
+	}
+	
+	/**
+	 * Get the distances matrix
+	 */
+	public static Distance getDistance(){
+		return distance;
+	}
+	
+	/**
+	 * Set the cells object
+	 * @param cellsSetter -- the cells object to set the class member to 
+	 */
+	public static void setCells(Cells cellsSetter){
+		cells = cellsSetter;
+	}
+	
+	/**
+	 * Get the cells object
+	 * @return cells -- the cells object to be passed
+	 */
+	public static Cells getCells(){
+		return cells;
+	}
+
+}

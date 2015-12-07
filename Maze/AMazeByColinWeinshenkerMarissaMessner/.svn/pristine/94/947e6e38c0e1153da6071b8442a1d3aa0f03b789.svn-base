@@ -1,0 +1,104 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
+
+/**
+ * This class supports functionality for the finish state of the maze
+ * Textviews show the user the condition under which the play state terminated
+ * They should also show the robot's path length and remaining battery level
+ * A button allows the user to save the maze for future use
+ * Exiting this activity returns the user to the title state
+ * @author cweinshenker
+ * @author mamessner
+ */
+public class FinishActivity extends Activity {
+
+	private boolean foundExit;
+	private float batteryLevel;
+	private int pathLength;
+	private Intent previousIntent;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_finish);
+		previousIntent = getIntent();
+		setFinishText();
+		setBatteryLevelText();
+		setPathLengthText();
+	}
+	
+	/**
+	 * Set the main TextView based on whether or not the exit was found.
+	 */
+	public void setFinishText() {
+		foundExit = previousIntent.getBooleanExtra("foundExit", false);
+		TextView finishText = (TextView) findViewById(R.id.finishText);
+		Log.v("Exit found:", "" + foundExit);
+		if (foundExit) {
+			finishText.setText("Congratulations!");
+		}
+		else {
+			finishText.setText("You failed!");
+		}
+	}
+	
+	/**
+	 * Set the text view displaying the robot's remaining battery.
+	 */
+	public void setBatteryLevelText() {
+		batteryLevel = previousIntent.getIntExtra("batteryLevel", 0);
+		Log.v("Remaining battery: ", "" + batteryLevel);
+		TextView batteryLevelText = (TextView) findViewById(R.id.batteryLevel);
+		batteryLevelText.setText("Battery level: " + batteryLevel);
+	}
+	
+	/**
+	 * Set the text view displaying the robot's path length
+	 */
+	public void setPathLengthText() {
+		pathLength = previousIntent.getIntExtra("pathLength", 0);
+		Log.v("Path length: ", "" + pathLength);
+		TextView pathLengthText = (TextView) findViewById(R.id.pathLength);
+		pathLengthText.setText("Path length: " + pathLength);
+	}
+	
+	/**
+	 * Inflate the menu
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.finish, menu);
+		return true;
+	}
+	
+	/**
+	 * Return the user to the title screen if the back button is pressed.
+	 */
+	@Override
+	public void onBackPressed(){
+		 Intent intent = new Intent(this, AMazeActivity.class);
+		 startActivity(intent);
+	}
+
+	/**
+	 * Handle action bar item clicks here. The action bar will
+	 * automatically handle clicks on the Home/Up button, so long
+	 * as you specify a parent activity in AndroidManifest.xml.
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}

@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui.PlayActivity" >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar1"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background = "?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="19dp" >
+    </android.support.v7.widget.Toolbar>
+
+    <ProgressBar
+        android:id="@+id/batteryLevelBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:max="100" />
+	
+     <Button
+        android:id="@+id/shortcutSuccess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/batteryLevelBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="105dp"
+        android:onClick="toFinishSuccess"
+        android:text="Shortcut success" />
+    
+    <Button
+        android:id="@+id/shortcutFailure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shortcutSuccess"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="57dp"
+        android:onClick="toFinishFailure"
+        android:text="Shortcut failure" />
+
+        <!--android:layout_below="@id/shortcutSuccess"-->
+
+    <TextView
+        android:id="@+id/batteryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/batteryLevelBar"
+        android:layout_alignLeft="@+id/batteryLevelBar"
+        android:layout_marginBottom="14dp"
+        android:text="Battery level"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>

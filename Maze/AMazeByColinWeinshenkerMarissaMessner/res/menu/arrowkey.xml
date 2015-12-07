@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <item
+        android:id = "@+id/forward"
+        android:icon = "@drawable/ic_keyboard_arrow_up_black_24dp"
+        android:title = "@string/forward" 
+        app:showAsAction="always"
+        />
+    <item 
+        android:id = "@+id/backward"
+        android:icon = "@drawable/ic_keyboard_arrow_down_black_24dp"
+        android:title = "@string/backward"
+        app:showAsAction="always" 
+        />
+    <item
+        android:id = "@+id/left"
+        android:icon = "@drawable/ic_keyboard_arrow_left_black_24dp"
+        android:title = "@string/left"
+        app:showAsAction= "always"
+        />
+    <item
+        android:id = "@+id/right"
+        android:icon = "@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:title = "@string/right"
+        app:showAsAction = "always"
+        />
+
+</menu>

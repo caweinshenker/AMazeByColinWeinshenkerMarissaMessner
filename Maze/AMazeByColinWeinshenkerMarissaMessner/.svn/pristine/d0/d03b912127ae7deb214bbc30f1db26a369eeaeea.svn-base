@@ -1,0 +1,177 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
+public class GeneratingActivity extends AppCompatActivity {
+	
+	private ProgressBar progressBar;
+	private TextView loadingText;
+	private int progressBarStatus = 0;
+	//private Toolbar myToolbar;
+//	private Handler mHandler = new Handler();
+//	CountDownTimer mCountDownTimer;
+//	int i=0;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_generating);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+		loadingText = (TextView) findViewById(R.id.loadingText);
+		//myToolbar = (Toolbar) findViewById(R.id.toolbar1);
+		//setSupportActionBar(myToolbar);
+//		progressBar.setProgress(i);
+		beginYourTask();
+		Log.v("Progress tag", "Progress: " + progressBar.getProgress());
+	}
+	
+	public void beginYourTask() {
+		new AsyncTask<Void, Integer, Void>(){
+
+			@Override
+			public Void doInBackground(Void...params){
+				while (progressBarStatus < 100){
+					progressBarStatus += 20;
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					publishProgress(progressBarStatus);
+				}
+				return null;
+			} 
+
+			@Override
+			public void onProgressUpdate(Integer... progress) {
+				progressBar.setProgress(progress[0]);
+			}
+
+
+			@Override
+			public void onPreExecute() {
+				progressBar.setProgress(0);
+			}
+			@Override
+			public void onPostExecute(Void result){
+				progressBar.setVisibility(View.INVISIBLE);
+				loadingText.setVisibility(View.INVISIBLE);
+			}
+
+		}.execute();
+	}
+		
+		
+		
+		
+		
+		
+//        new Thread(new Runnable() {
+//            public void run() {
+//                while (progressBarStatus < 100) {
+//                    progressBar.incrementProgressBy(5);
+//                    progressBarStatus += 5;
+//                    Log.v("Log_tag", "Current progress: " + progressBar.getProgress());
+//                    mHandler.post(new Runnable() {
+//                        public void run() {
+//                            progressBar.setProgress(progressBarStatus);
+//                        }
+//                    });
+//                }
+//            }
+//        }).start();
+//    }
+
+//		mCountDownTimer = new CountDownTimer(5000,1000) {
+//
+//		        @Override
+//		        public void onTick(long millisUntilFinished) {
+//		            Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+//		            i++;
+//		            progressBar.setProgress(i*20);
+//		            Toast.makeText(getApplicationContext(), "Progress: " + progressBar.getProgress(), Toast.LENGTH_SHORT).show();
+//		        }
+//
+//		        @Override
+//		        public void onFinish() {
+//		            i++;
+//		            progressBar.setProgress(i*20);
+//		        }
+//		    };
+//		    mCountDownTimer.start();
+//	while (mProgressStatus < 100){
+//	mProgress.incrementProgressBy(5);
+//	mProgressStatus += 5;
+//}
+		
+//		new Thread(new Runnable(){
+//			public void run(){
+//				while (mProgressStatus < 100){
+//					mProgressStatus++;
+//					
+//					//Update the progress bar
+//					mHandler.post(new Runnable(){
+//						public void run(){
+//							mProgress.setProgress(mProgressStatus);
+//						}
+//					});
+//				}
+//			}
+//						
+//		}).start();
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.generating, menu);
+		return true;
+	}
+	
+	public void toTitle(View view){
+		  Intent intent = new Intent(this, AMazeActivity.class);
+		  startActivity(intent);
+	  }
+	
+	public void toPlay(View view){
+		Intent intent = new Intent(this, PlayActivity.class);
+		startActivity(intent);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}

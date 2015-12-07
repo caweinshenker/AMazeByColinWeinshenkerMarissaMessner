@@ -1,0 +1,102 @@
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui.GeneratingActivity" >
+
+    <!-- android:progress="65" -->
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/loadingText"
+        android:onClick="toPlay"
+        android:text="Play" />
+
+    <!--
+         <Toolbar
+        android:id="@+id/toolbar1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/switch3"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/driver" >
+
+    </Toolbar>
+    -->
+
+    <TextView
+        android:id="@+id/loadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="43dp"
+        android:text="Loading"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/play"
+        android:layout_alignBottom="@+id/play"
+        android:layout_marginRight="18dp"
+        android:layout_toLeftOf="@+id/loadingText"
+        android:onClick="toTitle"
+        android:text="Back" />
+
+    <Switch
+        android:id="@+id/switch3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/switch1"
+        android:layout_alignRight="@+id/switch1"
+        android:layout_marginBottom="29dp"
+        android:text="Show solution" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/back"
+        android:layout_alignRight="@+id/switch1"
+        android:layout_marginBottom="33dp"
+        android:text="Show walls" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/switch2"
+        android:layout_marginBottom="16dp"
+        android:layout_toLeftOf="@+id/play"
+        android:text="Top-down" />
+
+    <Spinner
+        android:id="@+id/driver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/switch3"
+        android:layout_alignLeft="@+id/switch1"
+        android:layout_marginBottom="14dp"
+        android:entries="@array/driver_array"
+        android:prompt="@string/driver_prompt" />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/driver"
+        android:layout_toRightOf="@+id/back"
+        android:indeterminate="false"
+        android:max="100" />
+
+</RelativeLayout>

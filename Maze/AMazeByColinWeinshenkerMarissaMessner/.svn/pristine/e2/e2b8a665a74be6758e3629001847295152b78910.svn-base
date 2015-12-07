@@ -1,0 +1,125 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad;
+
+import android.os.Handler;
+import android.os.Message;
+
+public class MazeView extends DefaultViewer {
+
+	Maze maze ; // need to know the maze model to check the state 
+	// and to provide progress information in the generating state
+	Handler handler;
+	
+	public MazeView(Maze m) {
+		super() ;
+		maze = m;
+	}
+
+	@Override
+	public void redraw(GraphicsWrapper wrapper, int state, int px, int py, int view_dx,
+			int view_dy, int walk_step, int view_offset, RangeSet rset, int ang) {
+		switch (state) {
+		case Constants.STATE_TITLE:
+			redrawTitle(wrapper);
+			break;
+		case Constants.STATE_GENERATING:
+			redrawGenerating(wrapper);
+			break;
+		case Constants.STATE_PLAY:
+			// skip this one
+			break;
+		case Constants.STATE_FINISH:
+			handler.sendMessage(Message.obtain(handler, Constants.STATE_FINISH));
+			//redrawFinish(wrapper);
+			break;
+		case Constants.STATE_FAILURE:
+			handler.sendMessage(Message.obtain(handler, Constants.STATE_FAILURE));
+			//redrawFailure(wrapper);
+			break;
+		}
+	}
+	
+	private void dbg(String str) {
+		System.out.println("MazeView:" + str);
+	}
+	
+	// 
+	
+	/**
+	 * Helper method for redraw to draw the title screen, screen is hardcoded
+	 * @param  wrapper graphics is the off screen image
+	 */
+	void redrawTitle(GraphicsWrapper wrapper) {
+		wrapper.setColor("white");
+		wrapper.fillRect(0, 0, Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT);
+		wrapper.setFont("large");
+		wrapper.setColor("red");
+		wrapper.centerString(wrapper, "MAZE", 100);
+		wrapper.setColor("blue");
+		wrapper.setFont("small");
+		wrapper.centerString(wrapper, "by Paul Falstad", 160);
+		wrapper.centerString(wrapper, "www.falstad.com", 190);
+		wrapper.setColor("black");
+
+		wrapper.centerString(wrapper, "v1.2", 350);
+	}
+//	/**
+//	 * Helper method for redraw to draw final screen, screen is hard coded
+//	 * @param wrapper graphics is the off screen image
+//	 */
+//	void redrawFinish(GraphicsWrapper wrapper) {
+//		wrapper.setColor("blue");
+//		wrapper.fillRect(0, 0, Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT);
+//		wrapper.setFont("large");
+//		wrapper.setColor("yellow");
+//		wrapper.centerString(wrapper, "You won!", 100);
+//		wrapper.setColor("orange");
+//		wrapper.setFont("small");
+//		wrapper.centerString(wrapper, "Congratulations!", 160);
+//		wrapper.setColor("white");
+//		wrapper.centerString(wrapper, "Path Length: " + maze.getPathLength(), 200);
+//		wrapper.centerString(wrapper, "Energy used: " + maze.getEnergyUsed(), 230);
+//		wrapper.centerString(wrapper, "Hit any key to restart", 300);
+//	}
+//	
+//	/**
+//	 * Helper method for redraw to draw final screen in event of failure to solve maze
+//	 * Screen is hard-coded
+//	 * @param wrapper graphics is the off screen image
+//	 */
+//	void redrawFailure(GraphicsWrapper wrapper){
+//		wrapper.setColor("blue");
+//		wrapper.fillRect(0, 0, Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT);
+//		wrapper.setFont("large");
+//		wrapper.setColor("yellow");
+//		wrapper.centerString(wrapper, "You lost!", 100);
+//		wrapper.setColor("orange");
+//		wrapper.setFont("small");
+//		wrapper.centerString(wrapper, "Try again!", 160);
+//		wrapper.centerString(wrapper, "Path Length: " + maze.getPathLength(), 200);
+//		wrapper.centerString(wrapper, "EnergyUsed: " + maze.getEnergyUsed(), 230);
+//		wrapper.setColor("white");
+//		wrapper.centerString(wrapper, "Hit any key to restart", 300);
+//	}
+
+	/**
+	 * Helper method for redraw to draw screen during phase of maze generation, screen is hard coded
+	 * only attribute percentdone is dynamic
+	 * @param wrapper graphics is the off screen image
+	 */
+	void redrawGenerating(GraphicsWrapper wrapper) {
+		wrapper.setColor("yellow");
+		wrapper.fillRect(0, 0, Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT);
+		wrapper.setFont("large");
+		wrapper.setColor("red");
+		wrapper.centerString(wrapper, "Building maze", 150);
+		wrapper.setFont("small");
+		wrapper.setColor("black");
+		wrapper.centerString(wrapper, maze.getPercentDone()+"% completed", 200);
+		wrapper.centerString(wrapper, "Hit escape to stop", 300);
+	}
+	
+	public void setHandler(Handler handler){
+		this.handler = handler;
+	}
+
+}

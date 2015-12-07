@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    	<declare-styleable name = "GraphicsWrapper">
+    		<attr name = "showMap" format = "boolean"/>
+    		<attr name = "showSolution" format = "boolean"/>
+    		<attr name = "showWalls" format = "boolean" />
+    	</declare-styleable>
+</resources>

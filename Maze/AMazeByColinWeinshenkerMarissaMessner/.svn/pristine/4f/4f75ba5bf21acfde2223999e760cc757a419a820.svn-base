@@ -1,0 +1,114 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
+public class PlayActivity extends AppCompatActivity{
+	
+	private Toolbar mainToolbar;
+	private Toolbar arrowBar;
+	private String driver;
+	private boolean showSolution;
+	private boolean showWalls;
+	private boolean showMaze;
+	private float batteryLevel;
+	private int pathLength;
+	private boolean foundExit;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_play);
+		Intent intent = getIntent();
+		driver = intent.getStringExtra("driver");
+		showSolution = intent.getBooleanExtra("showSolution", false);
+		showWalls = intent.getBooleanExtra("showWalls", false);
+		showMaze = intent.getBooleanExtra("showMaze", false);
+		setUpToolbars();
+		Log.v("driver: ", driver);
+		if (driver.equals("Manual")){
+			arrowBar.inflateMenu(R.menu.arrowkey);
+		}
+		else{
+			arrowBar.inflateMenu(R.menu.pause);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.play, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		switch(id){
+		case R.id.action_settings:
+			return true;
+		case R.id.showmaze:
+			return true;
+		case R.id.solution:
+			return true;
+		case R.id.walls:
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	public void toFinish(View view){
+		  Intent intent = new Intent(this, FinishActivity.class);
+		  intent.putExtra("batteryLevel", batteryLevel);
+		  intent.putExtra("pathLength", pathLength);
+		  intent.putExtra("foundExit", foundExit);
+		  startActivity(intent);
+	}
+	
+	@Override
+	public void onBackPressed(){
+		Intent intent = new Intent(this, AMazeActivity.class);
+		startActivity(intent);
+	}
+	
+	public void setUpToolbars() {
+		mainToolbar = (Toolbar) findViewById(R.id.toolbar1);
+		mainToolbar.setTitle("");
+		setSupportActionBar(mainToolbar);
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
+		arrowBar = (Toolbar) findViewById(R.id.toolbar2);
+		arrowBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch(item.getItemId()){
+				case R.id.forward:
+					Log.v("Move: ", "forward");
+					return true;
+				case R.id.backward:
+					Log.v("Move: ", "back");
+					return true;
+				case R.id.left:
+					Log.v("Turn: ", "left");
+					return true;
+				case R.id.right:
+					Log.v("Turn: ", "right");
+					return true;
+				case R.id.pause:
+					Log.v("Pause: ", "paused");
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+}

@@ -1,0 +1,242 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.falstad;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.util.AttributeSet;
+import android.util.Log;
+
+//import java.awt.Font;
+//import java.awt.FontMetrics;
+//import java.awt.Graphics;
+//import java.awt.Color;
+
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.view.View;
+
+public class GraphicsWrapper extends View {
+
+//	Graphics gc;
+//	Font largeBannerFont = new Font("TimesRoman", Font.BOLD, 48);
+//	Font smallBannerFont = new Font("TimesRoman", Font.BOLD, 16);
+	private Canvas canvas;
+	private Paint paint;
+	private Bitmap bitmap;
+	private Typeface largeBannerTypeface;
+	private Typeface smallBannerTypeface;
+	private Matrix matrix;
+	private int layoutWidth;
+	private int layoutHeight;
+	
+	public GraphicsWrapper(Context context, AttributeSet attrs) {
+		super(context, attrs);
+//		init();
+	}
+	
+	/**
+	 * Initialize instance variables.
+	 */
+	private void init() {
+		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		// TODO: fix this to not be hardcoded (or at least be the right size)
+		bitmap = Bitmap.createBitmap(layoutWidth, layoutHeight, Bitmap.Config.ARGB_8888);
+		canvas = new Canvas(bitmap);
+		largeBannerTypeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
+		smallBannerTypeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
+		matrix = new Matrix();
+	}
+	
+	public void drawLine(int x1, int y1, int x2, int y2){
+		Log.v("Drawing line", "(" + x1 + ", " + y1 + ") to (" + x2 + ", " + y2 + ")");
+		canvas.drawLine(x1, y1, x2, y2, paint);
+		//invalidate();
+	}
+	
+	public void newGraphics() {
+		init();
+		//gc = getBufferGraphics();
+	}
+	
+	
+	/**
+	 * Set the Graphics object's color.
+	 * @param color the name of the color
+	 */
+	public void setColor (String color){
+		Log.v("Setting color", color);
+		switch(color){
+		case "white":
+			paint.setColor(Color.WHITE);
+			break;
+		case "black":
+			paint.setColor(Color.BLACK);
+			break;
+		case "red":
+			paint.setColor(Color.RED);
+			break;
+		case "orange":
+			paint.setColor(Color.CYAN);//Was orange
+			break;
+		case "yellow":
+			paint.setColor(Color.YELLOW);
+			break;
+		case "blue":
+			paint.setColor(Color.BLUE);
+			break;
+		case "gray":
+			paint.setColor(Color.GRAY);
+			break;
+		case "dark gray":
+			paint.setColor(Color.DKGRAY);
+		}
+		//this.invalidate();
+	}
+	
+	/**
+	 * Set the Paint object's color.
+	 * @param colorArray The color to set it to
+	 */
+	public void setColor(int[] colorArray){
+		paint.setColor(Color.rgb(colorArray[0], colorArray[1], colorArray[2]));
+		//invalidate();
+//		Color color = new Color(colorArray[0], colorArray[1], colorArray[2]);
+//		gc.setColor(color);
+	}
+	
+	/**
+	 * Convert an RGB array to a single RGB int.
+	 * @param colorArray The input color array
+	 * @return A color int
+	 */
+	public static int getRGB(int[] colorArray){
+		return Color.rgb(colorArray[0], colorArray[1], colorArray[2]);
+//		Color color = new Color(colorArray[0], colorArray[1], colorArray[2]);
+//		return color.getRGB();
+		//return 0;
+	}
+	
+	/**
+	 * Convert an RGB int to an RGB array.
+	 * @param colorInt The color int
+	 * @return A color array
+	 */
+	public static int[] getRGBArray(int colorInt) {
+		int[] colorArray = new int[3];
+		colorArray[0] = Color.red(colorInt);
+		colorArray[1] = Color.green(colorInt);
+		colorArray[2] = Color.blue(colorInt);
+		return colorArray;
+	}
+	
+	
+	/**
+	 * Set the Graphics object's font.
+	 * @param fontName the name of the font
+	 */
+	public void setFont(String fontName) {
+		Log.v("Setting font", fontName);
+		switch(fontName){
+		case "large":
+			paint.setTypeface(largeBannerTypeface);
+			break;
+		case "small":
+			paint.setTypeface(smallBannerTypeface);
+			break;
+		}
+		invalidate();
+//		switch(fontName) {
+//		case "large":
+//			gc.setFont(largeBannerFont);
+//			break;
+//		case "small":
+//			gc.setFont(smallBannerFont);
+//			break;
+//		}
+	}
+	
+	/**
+	 * Make a rectangle in the Graphics object.
+	 * @param x the x value of the top left corner
+	 * @param y the y value of the top left corner
+	 * @param width the width
+	 * @param height the height
+	 */
+	public void fillRect(int x, int y, int width, int height) {
+		Log.v("Filling rectangle", "(" + x + ", " + y + "): " + width + " by " + height); 
+		canvas.drawRect(x, y, x + width, y + height, paint);
+		//invalidate();
+		//gc.fillRect(x, y, width, height);
+	}
+	
+	/**
+	 * Calls the Graphics' objects fillPolygon method
+	 * @param xps -- array of x coordinates
+	 * @param yps -- array of y coordinates
+	 * @param npoints -- the total number of points
+	 */
+	public void fillPolygon(int[] xps, int[] yps, int npoints){
+		int i;
+		Path path = new Path();
+		path.moveTo(xps[0], yps[0]);
+		Log.v("Filling polygon", "true");
+		for (i = 1; i < xps.length; i++){
+			path.lineTo(xps[i], yps[i]);
+		}
+		canvas.drawPath(path, paint);
+		// TODO: figure out how to make this work! (used in FirstPersonDrawer)
+		//gc.fillPolygon(xps, yps, npoints);
+	}
+	
+	/**
+	 * Draw a string on the Graphics object.
+	 * @param str the string
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	public void drawString(String str, int x, int y) {
+		Log.v("Drawing text", "String: " + str);
+		canvas.drawText(str, x, y, paint);
+		invalidate();
+		//gc.drawString(str, x, y);
+	}
+	
+	public void centerString(GraphicsWrapper wrapper, String str, int ypos) {
+		FontMetrics fm = paint.getFontMetrics();
+		int stringWidth = (int) (Constants.VIEW_WIDTH - paint.measureText(str))/2;
+		wrapper.drawString(str, stringWidth, ypos);
+		invalidate();
+//		FontMetrics fm = gc.getFontMetrics();
+//		wrapper.drawString(str, (Constants.VIEW_WIDTH-fm.stringWidth(str))/2, ypos);
+	}
+	
+	public void fillOval(int x, int y, int width, int height){
+		Log.v("Filling oval", "true");
+		RectF oval = new RectF(x, y, x + width, y + height);
+		canvas.drawOval(oval, paint);
+		invalidate();
+		//gc.fillOval(x, y, width, height);
+	}
+	
+	public void measureDimensions() {
+		layoutWidth = this.getMeasuredWidth();
+		layoutHeight = this.getMeasuredHeight();
+		Log.v("Layout width", "" + layoutWidth);
+		Log.v("Layout height", "" + layoutHeight);
+		init();
+	}
+	
+	@Override
+	public void onDraw(Canvas canvas){
+		super.onDraw(canvas);
+		matrix.setScale(2, 2);
+		canvas.drawBitmap(bitmap, matrix, paint);
+	}
+	
+}

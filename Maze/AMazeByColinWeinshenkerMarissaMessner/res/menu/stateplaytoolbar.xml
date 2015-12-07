@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <Item
+        android:id = "@+id/showmaze"
+        android:icon = "@drawable/ic_border_all_black_24dp"
+        android:title = "@string/toggle_maze"
+        android:showAsAction = "ifRoom" />
+
+    <Item
+        android:id = "@+id/solution"
+        android:icon = "@drawable/ic_wb_incandescent_black_24dp"
+        android:title = "@string/toggle_solution"
+        android:showAsAction = "ifRoom"
+        />
+    <Item
+        android:id = "@+id/walls"
+        android:icon = "@drawable/ic_border_clear_black_24dp"
+        android:title = "@string/toggle_walls"
+        android:showAsAction= "ifRoom"
+        />
+    <Item
+        android:id = "@+id/back"
+        android:icon = "@drawable/ic_arrow_back_black_24dp"
+        android:title = "@string/back"
+        android:showAsAction= "always"
+        />
+    <Item
+        android:id = "@+id/pause"
+        android:icon = "@drawable/ic_pause_black_24dp"
+        android:title = "@string/pause"
+        android:showAsAction = "always"
+        />
+    <Item
+        android:id = "@+id/fast_forward"
+        android:icon = "@drawable/ic_fast_forward_black_24dp"
+        android:title = "@string/fast_forward"
+        android:showAsAction = "always"
+        />
+
+</menu>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AMazeByColinWeinshenkerMarissaMessner</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="generation_algorithm_prompt">Choose a generation algorithm</string>
+
+    <string-array name="generation_algorithm_array">
+        <item>Eller</item>
+        <item>Prim</item>
+        <item>Default</item>
+    </string-array>
+
+    <string name="title_activity_generating">GeneratingActivity</string>
+
+    <string-array name="driver_array">
+        <item>Manual</item>
+        <item>Wizard</item>
+        <item>Wall Follower</item>
+        <item>Curious Mouse</item>
+    </string-array>
+
+    <string name="driver_prompt">Pick a driver algorithm</string>
+    <string name="title_activity_play">PlayActivity</string>
+    <string name="toggle_maze">Display the maze</string>
+    <string name="toggle_solution">Display the solution</string>
+    <string name="toggle_walls">Display the maze walls</string>
+    <string name="back">Back to title</string>
+    <string name="pause">Pause</string>
+    <string name="fast_forward">Finish</string>
+    <string name="title_activity_finish">FinishActivity</string>
+    <string name = "forward">Forward</string>
+    <string name = "backward">Backward</string>
+    <string name = "left">Left</string>
+    <string name = "right">Right</string>
+
+</resources>

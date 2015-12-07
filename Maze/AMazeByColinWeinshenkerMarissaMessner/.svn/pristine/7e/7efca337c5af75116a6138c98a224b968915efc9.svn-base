@@ -1,0 +1,141 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class GeneratingActivity extends AppCompatActivity {
+	
+	private ProgressBar progressBar;
+	private TextView loadingText;
+	private int progressBarStatus = 0;
+	private Switch solutionSwitch;
+	private Switch wallsSwitch;
+	private Switch topDownSwitch;
+	private Spinner driver;
+	private Button playButton;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_generating);
+		Intent intent = getIntent();
+		int mazeLevel = intent.getIntExtra("level", 0);
+		String generationAlgorithm = intent.getStringExtra("generationAlgorithm");
+		setUpVariables();
+		playButton.setVisibility(View.INVISIBLE);
+		updateProgressBar();
+	}
+	
+	public void updateProgressBar() {
+		new AsyncTask<Void, Integer, Void>(){
+
+			@Override
+			public Void doInBackground(Void...params){
+				while (progressBarStatus < 100){
+					progressBarStatus += 5;
+					Log.v("Progress: ", "" + progressBarStatus);
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					publishProgress(progressBarStatus);
+				}
+				return null;
+			} 
+
+			@Override
+			public void onProgressUpdate(Integer... progress) {
+				progressBar.setProgress(progress[0]);
+			}
+
+
+			@Override
+			public void onPreExecute() {
+				progressBar.setProgress(0);
+			}
+			@Override
+			public void onPostExecute(Void result){
+				loadingText.setText("Ready");
+				Toast.makeText(getApplicationContext(), "Maze ready", Toast.LENGTH_SHORT).show();
+				playButton.setVisibility(View.VISIBLE);
+			}
+
+		}.execute();
+	}
+		
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.generating, menu);
+		return true;
+	}
+	
+	public void setUpVariables() {
+		progressBar = (ProgressBar) findViewById(R.id.batteryBar);
+		loadingText = (TextView) findViewById(R.id.loadingText);
+		solutionSwitch = (Switch) findViewById(R.id.switch3);
+		wallsSwitch = (Switch) findViewById(R.id.switch2);
+		topDownSwitch = (Switch) findViewById(R.id.switch1);
+		driver = (Spinner) findViewById(R.id.driver);
+		playButton = (Button) findViewById(R.id.play);
+	}
+	
+	public void toTitle(View view){
+		  Intent intent = new Intent(this, AMazeActivity.class);
+		  startActivity(intent);
+	}
+	
+	public void toPlay(View view){
+		Intent intent = new Intent(this, PlayActivity.class);
+		String driverChoice = driver.getSelectedItem().toString();
+		boolean showSolution = solutionSwitch.isChecked();
+		boolean showWalls = wallsSwitch.isChecked();
+		boolean showMaze = topDownSwitch.isChecked();
+		intent.putExtra("driver", driverChoice);
+		intent.putExtra("showSolution", showSolution);
+		intent.putExtra("showWalls", showWalls);
+		intent.putExtra("showMaze", showMaze);
+		startActivity(intent);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	public void addListenerOnDriverSelection() {
+		driver.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id){
+				Log.v("Driver selection", driver.getSelectedItem().toString());
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView){
+			}
+		});
+	}
+}

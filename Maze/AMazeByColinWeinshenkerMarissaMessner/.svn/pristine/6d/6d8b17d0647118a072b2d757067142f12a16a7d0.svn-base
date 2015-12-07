@@ -1,0 +1,115 @@
+package edu.wm.cs.cs301.ColinWeinshenkerMarissaMessner.ui;
+import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class AMazeActivity extends AppCompatActivity {
+	
+	private SeekBar seekBar;
+	private TextView textView;
+	private Spinner spinner;
+	private Button start;
+		
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_amaze);
+		initializeVariables();
+		addListenerOnSpinnerItemSelection();
+		//addListenerOnButton();
+		
+		//Initialize the textview with '0'
+		//textView.setText("Covered: " + seekBar.getProgress() + "/" + seekBar.getMax());
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+			int progress = 0;
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser){
+				progress = progressValue;
+				Toast.makeText(getApplicationContext(), "Changing seekbar's progress", Toast.LENGTH_SHORT).show();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar){
+				Toast.makeText(getApplicationContext(), "Started tracking seekbar", Toast.LENGTH_SHORT).show();
+			}
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar){
+				textView.setText("Skill Level: " + progress + "/" + seekBar.getMax());
+				Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
+			}
+			});
+		}
+
+
+	  public void addListenerOnSpinnerItemSelection() {
+		spinner = (Spinner) findViewById(R.id.spinner1);
+		spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+			
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id){
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView){
+			}
+		});
+	  }
+	  
+	  
+	  public void generateMaze(View view){
+		  Intent intent = new Intent(this, GeneratingActivity.class);
+	  }
+	  
+//	  public void addListenerOnButton() {
+//			start = (Button) findViewById(R.id.start);
+//			start.setOnClickListener(new OnClickListener() {
+//
+//			  @Override
+//			  public void onClick(View v) {
+//			    Toast.makeText(getApplicationContext(), "Starting", Toast.LENGTH_SHORT).show();
+//			  }
+//
+//			});
+//		  }
+
+	
+	
+	//Private method to initialize variables
+	private void initializeVariables(){
+		seekBar = (SeekBar) findViewById(R.id.seekBar1);
+		textView = (TextView) findViewById(R.id.textView1);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.amaze, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}
